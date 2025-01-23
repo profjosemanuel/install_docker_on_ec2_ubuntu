@@ -63,3 +63,24 @@ echo \
 sudo apt-get update
 
 sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+# Habilitar Docker para que se inicie con systemd
+echo "Configurando Docker para que se inicie automáticamente al arrancar..."
+if systemctl is-enabled docker | grep -q "disabled"; then
+    systemctl enable docker
+    echo "Docker ha sido habilitado para iniciarse automáticamente al arrancar."
+else
+    echo "Docker ya está configurado para iniciarse automáticamente al arrancar."
+fi
+
+# Iniciar el servicio Docker si no está activo
+if ! systemctl is-active --quiet docker; then
+    echo "Iniciando el servicio Docker..."
+    systemctl start docker
+else
+    echo "El servicio Docker ya está en ejecución."
+fi
+
+# Verificación final
+echo "Estado del servicio Docker:"
+systemctl status docker --no-pager
