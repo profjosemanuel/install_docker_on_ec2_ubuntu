@@ -1,5 +1,35 @@
 #!/usr/bin/env bash
 
+# Comprobar si el script se ejecuta como root
+if [ "$(id -u)" -ne 0 ]; then
+    echo "Este script debe ejecutarse con privilegios de administrador."
+    exit 1
+fi
+
+# Crear grupo "docker" si no existe
+if ! getent group docker > /dev/null; then
+    echo "Creando el grupo 'docker'..."
+    groupadd docker
+else
+    echo "El grupo 'docker' ya existe."
+fi
+
+# Añadir el usuario actual al grupo "docker" si no está ya añadido
+USER_NAME=$(whoami)
+if ! id -nG "$USER_NAME" | grep -qw "docker"; then
+    echo "Añadiendo el usuario '$USER_NAME' al grupo 'docker'..."
+    usermod -aG docker "$USER_NAME"
+else
+    echo "El usuario '$USER_NAME' ya pertenece al grupo 'docker'."
+fi
+
+# Comprobar y aplicar cambios al grupo sin necesidad de cerrar sesión
+newgrp docker
+
+# Verificar la configuración
+echo "Verificación: Usuario '$USER_NAME' pertenece a los grupos:"
+id "$USER_NAME"
+
 #Script para solo iniciar desde administrador
 if ["$(id -u)" -ne 0]; then
         echo "Este script debe ejecutarse con privilegios de administrador."
