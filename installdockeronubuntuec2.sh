@@ -30,12 +30,6 @@ newgrp docker
 echo "Verificación: Usuario '$USER_NAME' pertenece a los grupos:"
 id "$USER_NAME"
 
-#Script para solo iniciar desde administrador
-if ["$(id -u)" -ne 0]; then
-        echo "Este script debe ejecutarse con privilegios de administrador."
-        exit 1
-fi
-
 #Comprobante para añadir SOLO los repositorios que no estén instalados
 if ! grep -q "https://download.docker.com/linux/ubuntu" /etc/apt/sources.list.d/docker.list 2>/dev/null; then
         echo "Añadiendo repositorio de Docker..."
